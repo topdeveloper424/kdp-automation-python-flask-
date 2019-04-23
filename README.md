@@ -1,7 +1,14 @@
 # kdp-automation-python-flask-
 
+## Requirements
+
+python 3.0+, windows os
+
+
 ## Installation
 
+first, install python3+ 
+second, 
 ``pip install -r requirements.txt``
 
 
