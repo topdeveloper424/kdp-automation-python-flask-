@@ -105,7 +105,6 @@ def scrape():
         keyword7 = df.keyword7.tolist()
         upload = df.upload.tolist()
         cover = df.cover.tolist()
-        price = df.price.tolist()
 
         for i in range(0,len(titles)):
             print(titles[i])
