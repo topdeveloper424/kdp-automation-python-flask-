@@ -105,6 +105,7 @@ def scrape():
         keyword7 = df.keyword7.tolist()
         upload = df.upload.tolist()
         cover = df.cover.tolist()
+        price = df.price.tolist()
 
         for i in range(0,len(titles)):
             print(titles[i])
@@ -283,8 +284,9 @@ def scrape():
 
             try:
                 element_present = EC.presence_of_element_located((By.ID,"print-book-worldwide-rights-field"))
-                WebDriverWait(driver, 10).until(element_present)
-                driver.find_element_by_id("print-book-worldwide-rights-field").click()
+                WebDriverWait(driver, 100).until(element_present)
+#                driver.find_element_by_id("print-book-worldwide-rights-field").click()
+#                driver.find_element_by_xpath("""//*[@id="data-pricing-print-us-price-input"]/input""").send_keys(price[i])
                 time.sleep(1)
             except TimeoutException:
                 print("timeout!")
