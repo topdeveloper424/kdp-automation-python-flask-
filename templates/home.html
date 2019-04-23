@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        KDP Automation
+    </title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/css/custom.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/css/page.css')}}">
+    <script type="text/javascript" src="{{ url_for('static', filename='assets/js/jquery-3.1.1.min.js')}}"></script>
+
+</head>
+
+<body>
+    <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+        <div class="container">
+            <a href="{{url_for('index')}}" class="navbar-brand">KDP Automation</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+    <div class="container">
+        <br>
+        <br>
+        <br>
+        <form action = "{{url_for('excel_upload')}}" method = "POST" enctype = "multipart/form-data">
+            <div class="row">
+                <div class="col-md-5">
+                    <h3>Please Choose csv file for input :</h3>
+                </div>
+                <div class="col-md-3">
+                    <input type = "file" name = "file" />
+                </div>
+                <div class="col-md-2">
+                    <input class="btn btn-success" type = "submit" value="submit"/>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
+         </form>       
+         <br>
+         <br>
+         <br>
+         <div class="row">
+             <div class="col-md-4">
+                    <select class="form-control" id="mode">
+                        <option value="0">draft mode</option>
+                        <option value="1">live mode</option>
+                    </select>
+             </div>
+             <div class="col-md-8">
+             </div>
+             <br>
+             <br>
+             <br>
+             <div class="col-md-3">
+                 <label>email :</label>
+                 <input class="form-control" id="email" value="" required>
+             </div>
+             <div class="col-md-3">
+                 <label>password :</label>
+                 <input class="form-control" id="password" value="" required>
+             </div>
+             <div class="col-md-3">
+                 <label>interior file URL :</label>
+                 <input class="form-control" id="interior" required>
+             </div>
+             <div class="col-md-3">
+                 <label>cover file URL :</label>
+                 <input class="form-control" id="cover" required>
+             </div>
+        </div>
+        <br>
+        <br>
+        <br>
+       <div class="row">
+             <div class="col-md-2">
+                <button class="btn btn-danger" onclick="start()">start</button>
+             </div>
+             <div class="col-md-2">
+                <button class="btn btn-primary" onclick="stop()">stop</button>
+             </div>
+        </div>
+        <img src="{{url_for('static',filename='assets/img/loader.gif')}}" style="display: none" id="loader">
+        <br>
+        <div id="resultContainer">
+        </div>
+    </div>
+    <script>
+        function start(){
+            $("#loader").show();
+            var mode = $("#mode").val();
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var interior = $("#interior").val();
+            var cover = $("#cover").val();
+            if(email == "" || password == ""){
+                alert("plesae enter email and password !");
+                return;
+            }
+            if(interior == "" || cover == ""){
+                alert("please enter upload file path !");
+                return;
+            }
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+            $.getJSON($SCRIPT_ROOT + '/automate', {
+                mode: mode,
+                email:email,
+                password:password,
+                interior:interior,
+                cover:cover,
+            }, function(data) {
+                $("#loader").hide();
+                if(data.res == "empty"){
+                    alert("there is no input file !");
+                    $("#resultContainer").html("<h3>There is no input file !</h3>");
+                }else if(data.res == "success"){
+                    $("#resultContainer").html("<h3>Successfully uploaded !</h3>");
+                }else{
+                    $("#resultContainer").html("<h3>Something is wrong !</h3>");
+
+                }
+                console.log(data);
+
+            });
+
+        }
+        function scrape(){
+            var url = $("#scrapeURL").val();
+            var fileName = $("#fileName").val();
+            if(url.trim()==""){
+                alert("put link!");
+                return;
+            }
+            if(fileName.trim()==""){
+                alert("put file name !");
+                return;
+            }
+            $("#loader").show();
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+            $.getJSON($SCRIPT_ROOT + '/scrape', {
+                url: url,
+                fileName:fileName,
+            }, function(data) {
+                $("#loader").hide();
+                if(parseInt(data.number) > 1){
+                    $("#resultContainer").html("<h3>"+data.number+" products were scrapped successfully!  Please download  <a onclick=\"downloadFile('"+fileName+".xlsx')\" style=\"cursor:pointer\" target=\"_blank\">"+fileName+".xlsx</a></h3>");
+                }else{
+                    $("#resultContainer").html("<h3>Something is wrong !</h3>");
+                }
+                console.log(data);
+
+            });
+
+        }
+
+    </script>
+</body>
+
+</html>

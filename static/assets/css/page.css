@@ -1,0 +1,49 @@
+.table {
+	font-size: 20x;
+	font-weight: bold;
+}
+
+.table {
+	padding: 2;
+}
+
+.table td {
+	text-align: center;
+	padding: 2px;
+}
+
+.table tr {
+	text-align: center;
+	padding: 2px;
+}
+
+.table {
+	border-collapse: collapse;
+}
+
+.table tr {
+	background-color: #eee;
+	border-top: 2px solid #fff;
+}
+
+.table th {
+	background-color: #fff;
+}
+
+.table th {
+	padding: 2px 2px;
+}
+
+.table td {
+	padding: 2px 2px;
+}
+
+.button {
+	height: 10px;
+}
+
+.tbody {
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+</style>
