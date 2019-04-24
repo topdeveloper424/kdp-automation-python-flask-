@@ -91,7 +91,7 @@ def scrape():
             res = {}
             res['res'] = "empty"
             return jsonify(res)
-        headers = ["title","author","description","keyword1","keyword2","keyword3","keyword4","keyword5","keyword6","keyword7","upload","cover"]
+        headers = ["title","author","description","keyword1","keyword2","keyword3","keyword4","keyword5","keyword6","keyword7","upload","cover","trim_size"]
         df = pd.read_csv(csv_file,skiprows=1,names=headers)
         titles = df.title.tolist()
         authors = df.author.tolist()
@@ -105,6 +105,7 @@ def scrape():
         keyword7 = df.keyword7.tolist()
         upload = df.upload.tolist()
         cover = df.cover.tolist()
+        book_size = df.trim_size.tolist()
 
         for i in range(0,len(titles)):
             print(titles[i])
@@ -184,11 +185,82 @@ def scrape():
                 time.sleep(1)
             except TimeoutException:
                 print("timeout!")
+            print(book_size[i])
+            
+            filter_size = book_size[i]
+            filter_size=filter_size.strip()
 
+            
             try:
                 element_present = EC.presence_of_element_located((By.ID,"trim-size-standard-option-1-3-announce"))
                 WebDriverWait(driver, 10).until(element_present)
-                driver.find_element_by_id("trim-size-standard-option-1-3-announce").click()
+                template = driver.find_element_by_id("templateArea")
+                popularbt0 = template.find_element_by_id("trim-size-popular-option-0-0-announce")
+                populartemp0 = popularbt0.get_attribute("data-primary-display")
+                popularbt1 = template.find_element_by_id("trim-size-popular-option-0-1-announce")
+                populartemp1 = popularbt1.get_attribute("data-primary-display")
+                popularbt2 = template.find_element_by_id("trim-size-popular-option-0-2-announce")
+                populartemp2 = popularbt2.get_attribute("data-primary-display")
+                popularbt3 = template.find_element_by_id("trim-size-popular-option-0-3-announce")
+                populartemp3 = popularbt3.get_attribute("data-primary-display")
+                standbt0 = template.find_element_by_id("trim-size-standard-option-0-0-announce")
+                standtemp0 = standbt0.get_attribute("data-primary-display")
+                standbt1 = template.find_element_by_id("trim-size-standard-option-0-1-announce")
+                standtemp1 = standbt1.get_attribute("data-primary-display")
+                standbt2 = template.find_element_by_id("trim-size-standard-option-0-2-announce")
+                standtemp2 = standbt2.get_attribute("data-primary-display")
+                standbt3 = template.find_element_by_id("trim-size-standard-option-0-3-announce")
+                standtemp3 = standbt3.get_attribute("data-primary-display")
+                standbt4 = template.find_element_by_id("trim-size-standard-option-1-0-announce")
+                standtemp4 = standbt4.get_attribute("data-primary-display")
+                standbt5 = template.find_element_by_id("trim-size-standard-option-1-1-announce")
+                standtemp5 = standbt5.get_attribute("data-primary-display")
+                standbt6 = template.find_element_by_id("trim-size-standard-option-1-2-announce")
+                standtemp6 = standbt6.get_attribute("data-primary-display")
+                standbt7 = template.find_element_by_id("trim-size-standard-option-1-3-announce")
+                standtemp7 = standbt7.get_attribute("data-primary-display")
+                nonbt0 = template.find_element_by_id("trim-size-nonstandard-option-0-0-announce")
+                nontemp0 = nonbt0.get_attribute("data-primary-display")
+                nonbt1 = template.find_element_by_id("trim-size-nonstandard-option-0-1-announce")
+                nontemp1 = nonbt1.get_attribute("data-primary-display")
+                nonbt2 = template.find_element_by_id("trim-size-nonstandard-option-0-2-announce")
+                nontemp2 = nonbt2.get_attribute("data-primary-display")
+                nonbt3 = template.find_element_by_id("trim-size-nonstandard-option-0-3-announce")
+                nontemp3 = nonbt3.get_attribute("data-primary-display")
+
+                if populartemp0 == filter_size:
+                    popularbt0.click()
+                elif populartemp1 == filter_size:
+                    popularbt1.click()
+                elif populartemp2 == filter_size:
+                    popularbt2.click()
+                elif populartemp3 == filter_size:
+                    popularbt3.click()
+                elif standtemp0 == filter_size:
+                    standbt0.click()
+                elif standtemp1 == filter_size:
+                    standbt1.click()
+                elif standtemp2 == filter_size:
+                    standbt2.click()
+                elif standtemp3 == filter_size:
+                    standbt3.click()
+                elif standtemp4 == filter_size:
+                    standbt4.click()
+                elif standtemp5 == filter_size:
+                    standbt5.click()
+                elif standtemp6 == filter_size:
+                    standbt6.click()
+                elif standtemp7 == filter_size:
+                    standbt7.click()
+                elif nontemp0 == filter_size:
+                    nonbt0.click()
+                elif nontemp1 == filter_size:
+                    nonbt1.click()
+                elif nontemp2 == filter_size:
+                    nonbt2.click()
+                elif nontemp3 == filter_size:
+                    nonbt3.click()
+
                 time.sleep(1)
             except TimeoutException:
                 print("timeout!")
@@ -278,6 +350,8 @@ def scrape():
                 driver.find_element_by_id("book-setup-navigation-bar-content-link").click()
                 time.sleep(1)
             except TimeoutException:
+                driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
+                continue
                 print("timeout!")
 
             try:
@@ -285,6 +359,8 @@ def scrape():
                 WebDriverWait(driver, 10).until(element_present)
                 time.sleep(1)
             except TimeoutException:
+                driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
+                continue
                 print("timeout!")
             accept_url = driver.current_url + "?acceptProof=CONVERTED"
             driver.get(accept_url)
@@ -296,6 +372,8 @@ def scrape():
 #                driver.find_element_by_xpath("""//*[@id="data-pricing-print-us-price-input"]/input""").send_keys(price[i])
                 time.sleep(1)
             except TimeoutException:
+                driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
+                continue
                 print("timeout!")
             driver.find_element_by_id("save-and-publish-announce").click()
 
@@ -304,6 +382,8 @@ def scrape():
                 WebDriverWait(driver, 10).until(element_present)
                 time.sleep(1)
             except TimeoutException:
+                driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
+                continue
                 print("timeout!")
             table = driver.find_element_by_xpath("""//*[@id="podbookshelftable"]/div[4]/div/table""")
             trs = table.find_elements_by_class_name("mt-row")
