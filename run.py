@@ -218,12 +218,13 @@ def scrape():
             flag = 0
             while flag == 0:
                 try:
-                    choice = driver.find_element_by_xpath("""//*[@id="data-print-book-publisher-cover-choice-accordion"]/div[2]/div/div[1]/a""")
-                    flag = 1
+                    modal_style = driver.find_element_by_id("a-popover-lgtbox").get_attribute("style")
+                    if modal_style.find("none") != -1:
+                        flag = 1
                 except Exception:
                     time.sleep(1)
 
-            time.sleep(3)
+            time.sleep(1)
             driver.find_element_by_xpath("""//*[@id="data-print-book-publisher-cover-choice-accordion"]/div[2]/div/div[1]/a""").click()
             time.sleep(2)
             driver.find_element_by_id("data-print-book-publisher-cover-file-upload-browse-button-announce").click()
@@ -240,18 +241,25 @@ def scrape():
             flag = 0
             while flag == 0:
                 try:
-                    driver.find_element_by_id("save-announce").click()
-                    flag = 1
+                    modal_style = driver.find_element_by_id("a-popover-lgtbox").get_attribute("style")
+                    if modal_style.find("none") != -1:
+                        flag = 1
                 except Exception:
                     time.sleep(1)
-            time.sleep(3)
+
+            time.sleep(1)
+            driver.find_element_by_id("save-announce").click()
 
             flag = 0
             while flag == 0:
-                status = driver.find_element_by_id("potter-success-alert-bottom").text
-                if status.find("Save Successful!") != -1:
-                    flag = 1
-                time.sleep(1)
+                try:
+                    modal_style = driver.find_element_by_id("a-popover-lgtbox").get_attribute("style")
+                    if modal_style.find("none") != -1:
+                        flag = 1
+                except Exception:
+                    time.sleep(1)
+
+
             driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
     else:
 
