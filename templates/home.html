@@ -101,9 +101,12 @@
                 alert("plesae enter email and password !");
                 return;
             }
-            if(interior == "" || cover == ""){
-                alert("please enter upload file path !");
-                return;
+            if(mode == 0){
+                if(interior == "" || cover == ""){
+                    alert("please enter upload file path !");
+                    return;
+                }
+
             }
             $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             $.getJSON($SCRIPT_ROOT + '/automate', {
@@ -122,34 +125,6 @@
                 }else{
                     $("#resultContainer").html("<h3>Something is wrong !</h3>");
 
-                }
-                console.log(data);
-
-            });
-
-        }
-        function scrape(){
-            var url = $("#scrapeURL").val();
-            var fileName = $("#fileName").val();
-            if(url.trim()==""){
-                alert("put link!");
-                return;
-            }
-            if(fileName.trim()==""){
-                alert("put file name !");
-                return;
-            }
-            $("#loader").show();
-            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-            $.getJSON($SCRIPT_ROOT + '/scrape', {
-                url: url,
-                fileName:fileName,
-            }, function(data) {
-                $("#loader").hide();
-                if(parseInt(data.number) > 1){
-                    $("#resultContainer").html("<h3>"+data.number+" products were scrapped successfully!  Please download  <a onclick=\"downloadFile('"+fileName+".xlsx')\" style=\"cursor:pointer\" target=\"_blank\">"+fileName+".xlsx</a></h3>");
-                }else{
-                    $("#resultContainer").html("<h3>Something is wrong !</h3>");
                 }
                 console.log(data);
 
