@@ -84,13 +84,14 @@ def scrape():
         time.sleep(1)
     except TimeoutException:
         print("timeout!")
-
+    
+    csv_file = "static\\upload\\input.csv"
+    if not os.path.exists(csv_file):
+        res = {}
+        res['res'] = "empty"
+        return jsonify(res)
+    
     if mode == 0:
-        csv_file = "static\\upload\\input.csv"
-        if not os.path.exists(csv_file):
-            res = {}
-            res['res'] = "empty"
-            return jsonify(res)
         headers = ["title","author","description","keyword1","keyword2","keyword3","keyword4","keyword5","keyword6","keyword7","upload","cover","trim_size"]
         df = pd.read_csv(csv_file,skiprows=1,names=headers)
         titles = df.title.tolist()
@@ -334,19 +335,32 @@ def scrape():
 
             driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
     else:
+        headers = ["price"]
+        df = pd.read_csv(csv_file,skiprows=1,names=headers)
+        prices = df.price.tolist()
+        
+        try:
+            element_present = EC.presence_of_element_located((By.ID,"podbookshelftable_filter_input"))
+            WebDriverWait(driver, 200).until(element_present)
+        except TimeoutException:
+            print("timeout!")
+            
 
         number = 1
+        counter = -1
+        driver.find_element_by_id("podbookshelftable_filter_input").click()
+        driver.find_element_by_id("podbookshelftable-publishing-status-filter-draft").click()
+        time.sleep(3)
         while number > 0:
-            driver.find_element_by_id("podbookshelftable_filter_input").click()
-            driver.find_element_by_id("podbookshelftable-publishing-status-filter-draft").click()
-            time.sleep(3)
+            counter += 1
+            
             table = driver.find_element_by_xpath("""//*[@id="podbookshelftable"]/div[4]/div/table""")
             trs = table.find_elements_by_class_name("mt-row")
             trs[0].find_element_by_class_name("indie-split-button-main-action-normal").click()
             
             try:
                 element_present = EC.presence_of_element_located((By.ID,"book-setup-navigation-bar-content-link"))
-                WebDriverWait(driver, 10).until(element_present)
+                WebDriverWait(driver, 20).until(element_present)
                 driver.find_element_by_id("book-setup-navigation-bar-content-link").click()
                 time.sleep(1)
             except TimeoutException:
@@ -364,27 +378,44 @@ def scrape():
                 print("timeout!")
             accept_url = driver.current_url + "?acceptProof=CONVERTED"
             driver.get(accept_url)
+            time.sleep(3)
+            driver.find_element_by_id("save-and-continue-announce").click()
 
             try:
                 element_present = EC.presence_of_element_located((By.ID,"print-book-worldwide-rights-field"))
                 WebDriverWait(driver, 100).until(element_present)
-#                driver.find_element_by_id("print-book-worldwide-rights-field").click()
-#                driver.find_element_by_xpath("""//*[@id="data-pricing-print-us-price-input"]/input""").send_keys(price[i])
-                time.sleep(1)
+                driver.find_element_by_id("print-book-worldwide-rights-field").click()
+                driver.find_element_by_xpath("""//*[@id="data-pricing-print-us-price-input"]/input""").send_keys(str(prices[counter]))
+                time.sleep(3)
             except TimeoutException:
                 driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
                 continue
                 print("timeout!")
             driver.find_element_by_id("save-and-publish-announce").click()
-
+            flag = 0
+            while flag == 0:
+                try:
+                    modal_style = driver.find_element_by_id("a-popover-lgtbox").get_attribute("style")
+                    if modal_style.find("none") != -1:
+                        flag = 1
+                except Exception:
+                    time.sleep(1)
+                
             try:
-                element_present = EC.presence_of_element_located((By.ID,"podbookshelftable"))
+                element_present = EC.presence_of_element_located((By.ID,"publish-confirm-popover-print-close"))
                 WebDriverWait(driver, 10).until(element_present)
                 time.sleep(1)
+                driver.find_element_by_id("publish-confirm-popover-print-close").click()
             except TimeoutException:
                 driver.find_element_by_xpath("""//*[@id="top-0"]/div/div[2]/div/div[2]/span/a[1]""").click()
                 continue
                 print("timeout!")
+            time.sleep(1)
+                
+            driver.find_element_by_id("podbookshelftable_filter_input").click()
+            driver.find_element_by_id("podbookshelftable-publishing-status-filter-draft").click()
+            time.sleep(3)
+
             table = driver.find_element_by_xpath("""//*[@id="podbookshelftable"]/div[4]/div/table""")
             trs = table.find_elements_by_class_name("mt-row")
             number = len(trs)
